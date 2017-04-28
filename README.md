@@ -15,7 +15,7 @@ Formide-Drivers is the software used by Formide to connect with a 3D printer and
 There are pre-built binaries of this project.
 Installation can be done with `npm`:
 ```
-npm install --save PRINTR3D/formide-drivers
+npm install --save formide-drivers
 ```
 
 

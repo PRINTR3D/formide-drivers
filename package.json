@@ -1,0 +1,23 @@
+{
+  "name": "formide-drivers",
+  "version": "6.6.6",
+  "description": "Drivers for formide-client",
+  "main": "index.js",
+  "os" : [ "darwin", "linux" ],
+  "dependencies": {
+    "nan": "^2.1.0",
+    "node-pre-gyp": "^0.6.17"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-pre-gyp install"
+  },
+  "author": "",
+  "license": "ISC",
+  "gypfile": true,
+  "binary": {
+    "module_name": "Formidriver",
+    "module_path": "./lib/binding/",
+    "host": "https://storage.googleapis.com/downloads.formide.com/drivers"
+  }
+}

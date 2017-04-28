@@ -1,4 +1,19 @@
+*.d
+*.o
+*.o
+node_modules
+build
+lib
+.project
 
-src/.project
+dep.sh
+
+.DS_Store
+
+.DS_Store
+
+.DS_Store
+
+src/.settings/language.settings.xml
 
 src/.cproject

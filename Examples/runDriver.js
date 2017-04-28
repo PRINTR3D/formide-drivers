@@ -1,4 +1,4 @@
-var driver = require('../lib/binding/Formidriver');
+var driver = require('../index.js');
 
 var positive = false;
 var printerID;

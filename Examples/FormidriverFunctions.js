@@ -1,6 +1,6 @@
 //Examples of functions to the driver
 
-var driver = require('./build/Release/Formidriver');
+var driver = require('../index.js');
 
 var moveRight = "G1 X40";
 var moveLeft = "G1 X20";
@@ -10,7 +10,7 @@ var filename = "/path/to/file.gcode";
 var printjobID = 3;
 var serialPortPath = "/dev/tty.usbmodem12341";
 
-//START SERVER 
+//START SERVER
 driver.start(function(err,result,event){
 	if(err)
 	{
@@ -41,7 +41,7 @@ driver.sendGcode(homeCommand, serialPortPath, function(err,result){
 });
 
 
-// PRINT GCODE FILE 
+// PRINT GCODE FILE
 //[filename, printjobID, serial port, callback]
 driver.printFile(short_filename, 6, serialPortPath,function(err,result){
 	if(err)
@@ -119,5 +119,3 @@ driver.stopPrint(serialPortPath, stopGcode, function(err,result){
 		//your handler
 	}
 });
-
-

@@ -10,7 +10,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "node-pre-gyp install"
+    "install": "./node_modules/.bin/node-pre-gyp install --fallback-to-build"
   },
   "author": "",
   "license": "ISC",

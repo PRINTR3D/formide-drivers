@@ -1172,8 +1172,9 @@ void PausePrint(const FunctionCallbackInfo<Value>& args) {
 			Logger::GetInstance()->logMessage("Appending gcode",4,0);
 
 			// If only one command (which means, no '\n' found)
-			if(pauseGCode.size()>0 && posT != std::string::npos)
+			if(pauseGCode.size()>0 && posT == std::string::npos)
 			{
+
 				char* newLine = new char('\n');
 				pauseGCode.append(newLine);
 			}
@@ -1284,7 +1285,7 @@ void ResumePrint(const FunctionCallbackInfo<Value>& args) {
 			Logger::GetInstance()->logMessage("Appending gcode",4,0);
 
 			// If only one command (which means, no '\n' found)
-			if(resumeGCode.size()>0 && posT != std::string::npos)
+			if(resumeGCode.size()>0 && posT == std::string::npos)
 			{
 				char* newLine = new char('\n');
 				resumeGCode.append(newLine);

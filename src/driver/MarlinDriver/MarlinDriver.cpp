@@ -1395,8 +1395,8 @@ MarlinDriver::resumePrint(){
 			{
 				rawLineBuffer.push_back("G90");
 				rawLineBuffer.push_back("G92 E"+std::to_string(resumeEvalue));
-				rawLineBuffer.push_back("G1 F6000 X5 Y5");
-				rawLineBuffer.push_back("M402");
+//				rawLineBuffer.push_back("G1 F6000 X5 Y5");
+//				rawLineBuffer.push_back("M402");
 				mustReturnToResumePosition=false;
 			}
 

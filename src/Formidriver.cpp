@@ -1062,7 +1062,7 @@ void runDriver(uv_work_t* req, int status){
 void Start(const FunctionCallbackInfo<Value>& args)
 {
 
-	std::cout << "Starting Formide drivers v6.6.6-alpha.1" << std::endl;
+	std::cout << "Starting Formide drivers v6.6.7 (modified)" << std::endl;
 
 	std::cout << "Debug level: " << Logger::GetInstance()->getLogLevel() << std::endl;
 
@@ -1137,6 +1137,8 @@ void PausePrint(const FunctionCallbackInfo<Value>& args) {
 
 	// Parse Callback from arguments
 	Local<Function> cb;
+
+	// This is writen this way to keep backwards compatibility
 	if(args[1]->IsFunction())
 	{
 		cb = Local<Function>::Cast(args[1]);
@@ -1248,6 +1250,9 @@ void ResumePrint(const FunctionCallbackInfo<Value>& args) {
 
 	// Parse Callback from arguments
 	Local<Function> cb;
+
+
+	// This is writen this way to keep backwards compatibility
 	if(args[1]->IsFunction())
 	{
 		cb = Local<Function>::Cast(args[1]);

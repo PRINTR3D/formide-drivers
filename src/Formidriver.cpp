@@ -1151,7 +1151,7 @@ void PausePrint(const FunctionCallbackInfo<Value>& args) {
 
 
 	if(!pauseGCode.size()>0)
-		pauseGCode="G91\nG1 E-2\nG1 Z10\nG90\n";
+		pauseGCode="G91\nG1 E-6\nG1 Z10\nG90\n";
 
 
 	MarlinDriver* driver = DeviceCenter::GetInstance()->getDriverFromPrinter(printerID);

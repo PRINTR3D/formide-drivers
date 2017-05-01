@@ -771,7 +771,7 @@ MarlinDriver::checkIfTemperaturesAreReached(){
 
 //TODO: Get rid of callback
 void
-MarlinDriver::pushRawCommand (const std::string& gcode, std::string &callback, bool wait) {
+MarlinDriver::pushRawCommand (const std::string& gcode) {
 
 	rawLineBuffer.push_back(gcode);
 }

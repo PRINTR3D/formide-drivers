@@ -511,7 +511,6 @@ void* FormiThread::insertLinesManually(void* threadarg)
     MarlinDriver* driver = DeviceCenter::GetInstance()->getDriverFromPrinter(data->serialDevice);
 
     std::string printerID = data->serialDevice;
-    std::string nothingCallback;
 
     while (1) {
         std::cout << "Please insert a line: " << std::endl;
@@ -523,7 +522,7 @@ void* FormiThread::insertLinesManually(void* threadarg)
                   << std::endl
                   << std::endl;
 
-        driver->pushRawCommand(input, nothingCallback, false);
+        driver->pushRawCommand(input);
     }
 }
 

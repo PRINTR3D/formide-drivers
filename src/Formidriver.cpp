@@ -3,7 +3,6 @@
  *	Copyright (c) 2017, All rights reserved, Printr B.V.
  */
 
-
 #include <node.h>
 #include <node_object_wrap.h>
 #include <nan.h>
@@ -324,7 +323,7 @@ void SendCommand(const FunctionCallbackInfo<Value>& args) {
 						std::string callback;
 
 						// Add each single command in raw line buffer
-						driver->pushRawCommand(gcodeChunk,callback, true);
+						driver->pushRawCommand(gcodeChunk);
 						count++;
 
 						posT = (RAWCOMMAND.find("\n",posT));
@@ -465,7 +464,7 @@ void SendTuneCommand(const FunctionCallbackInfo<Value>& args) {
 						Logger::GetInstance()->logMessage("Appending: ",4,0);
 						Logger::GetInstance()->logMessage(gcodeChunk,4,0);
 
-						driver->pushRawCommand(gcodeChunk,callback, true);
+						driver->pushRawCommand(gcodeChunk);
 						count++;
 
 						driver->extraStatusFromGcode(gcodeChunk);
@@ -1065,7 +1064,7 @@ void runDriver(uv_work_t* req, int status){
 void Start(const FunctionCallbackInfo<Value>& args)
 {
 
-	std::cout << "Starting Formide drivers v6.6.7" << std::endl;
+	std::cout << "Starting Formide drivers v6.6.6-alpha.1" << std::endl;
 
 	std::cout << "Debug level: " << Logger::GetInstance()->getLogLevel() << std::endl;
 
@@ -1115,7 +1114,7 @@ void Start(const FunctionCallbackInfo<Value>& args)
 
 }
 
-//Pause print function
+//Pause print function. Args: printerID, pauseGCode, callback
 void PausePrint(const FunctionCallbackInfo<Value>& args) {
 
 	Logger::GetInstance()->logMessage("Pause print received",1,0);
@@ -1135,6 +1134,28 @@ void PausePrint(const FunctionCallbackInfo<Value>& args) {
 	String::Utf8Value v8String(args[0]->ToString());
 	std::string printerID = std::string(*v8String);
 
+	// Parse pauseGcode from arguments
+	std::string pauseGCode;
+
+	// Parse Callback from arguments
+	Local<Function> cb;
+	if(args[1]->IsFunction())
+	{
+		cb = Local<Function>::Cast(args[1]);
+
+	}
+	else
+	{
+		String::Utf8Value v8String(args[1]->ToString());
+		pauseGCode = std::string(*v8String);
+
+		cb = Local<Function>::Cast(args[2]);
+	}
+
+
+	if(!pauseGCode.size()>0)
+		pauseGCode="";
+
 	MarlinDriver* driver = DeviceCenter::GetInstance()->getDriverFromPrinter(printerID);
 
 	// Pause print
@@ -1142,6 +1163,41 @@ void PausePrint(const FunctionCallbackInfo<Value>& args) {
 
 	if (success)
 	{
+
+		// Make multiple commands separating by \n
+		size_t pos0 = 0;
+		size_t posT = (pauseGCode.find("\n",pos0)) +1;
+		std::string gcodeChunk;
+
+		Logger::GetInstance()->logMessage("Appending gcode",4,0);
+
+		// If only one command (which means, no '\n' found)
+		if(pauseGCode.size()>0 && posT != std::string::npos)
+		{
+			char* newLine = new char('\n');
+			pauseGCode.append(newLine);
+		}
+
+		while (posT != std::string::npos)
+		{
+			gcodeChunk = pauseGCode.substr(pos0,posT-pos0-1);
+			pos0 = posT;
+			Logger::GetInstance()->logMessage("Appending: ",5,0);
+			Logger::GetInstance()->logMessage(gcodeChunk,5,0);
+
+			std::string callback;
+
+			// Add each single command in raw line buffer
+			driver->pushRawCommand(gcodeChunk);
+
+			posT = (pauseGCode.find("\n",posT));
+			if (posT != std::string::npos)
+			{
+				posT+=1;
+			}
+		}
+
+
 		// Return success response
 		resultOBJ->Set(String::NewFromUtf8(isolate, "code"), Integer::New(isolate,200));
 		resultOBJ->Set(String::NewFromUtf8(isolate, "msg"), String::NewFromUtf8(isolate,"Print paused"));
@@ -1157,7 +1213,7 @@ void PausePrint(const FunctionCallbackInfo<Value>& args) {
 		callbackArguments[1] = v8::Null(isolate);
 	}
 
-	Local<Function> cb = Local<Function>::Cast(args[1]);
+
 	cb->Call(isolate->GetCurrentContext()->Global(), numberOfArguments, callbackArguments);
 
 	return;
@@ -1243,7 +1299,6 @@ void StopPrint(const FunctionCallbackInfo<Value>& args) {
 	size_t posT = (stopGcode.find("\n",pos0)) +1;
 	std::string gcodeChunk;
 
-	int count =0;
 	while (posT != std::string::npos)
 	{
 
@@ -1255,8 +1310,7 @@ void StopPrint(const FunctionCallbackInfo<Value>& args) {
 		Logger::GetInstance()->logMessage(gcodeChunk,2,0);
 
 		// Queue each GCODE command in raw line buffer
-		driver->pushRawCommand(gcodeChunk,callback, true);
-		count++;
+		driver->pushRawCommand(gcodeChunk);
 
 		posT = (stopGcode.find("\n",posT));
 

@@ -3,7 +3,6 @@
  *	Copyright (c) 2017, All rights reserved, Printr B.V.
  */
 
-
 #include <node.h>
 #include <node_object_wrap.h>
 #include <nan.h>
@@ -305,8 +304,6 @@ void SendCommand(const FunctionCallbackInfo<Value>& args) {
 				else if (state == 3)
 				{
 
-					std::string callback;
-
 					// Make multiple commands separating by \n
 					size_t pos0 = 0;
 					size_t posT = (RAWCOMMAND.find("\n",pos0)) +1;
@@ -321,10 +318,9 @@ void SendCommand(const FunctionCallbackInfo<Value>& args) {
 						Logger::GetInstance()->logMessage("Appending: ",5,0);
 						Logger::GetInstance()->logMessage(gcodeChunk,5,0);
 
-						std::string callback;
 
 						// Add each single command in raw line buffer
-						driver->pushRawCommand(gcodeChunk,callback, true);
+						driver->pushRawCommand(gcodeChunk);
 						count++;
 
 						posT = (RAWCOMMAND.find("\n",posT));
@@ -334,9 +330,10 @@ void SendCommand(const FunctionCallbackInfo<Value>& args) {
 						}
 					}
 
+
+
 					// Create result object (for callback)
 					resultOBJ->Set(String::NewFromUtf8(isolate, "code"), Integer::New(isolate,200));
-					resultOBJ->Set(String::NewFromUtf8(isolate, "rawResponse"), String::NewFromUtf8(isolate,callback.c_str()));
 					resultOBJ->Set(String::NewFromUtf8(isolate, "port"), String::NewFromUtf8(isolate,PRINTERID.c_str()));
 					callbackArguments[0] = v8::Null(isolate);
 
@@ -465,7 +462,7 @@ void SendTuneCommand(const FunctionCallbackInfo<Value>& args) {
 						Logger::GetInstance()->logMessage("Appending: ",4,0);
 						Logger::GetInstance()->logMessage(gcodeChunk,4,0);
 
-						driver->pushRawCommand(gcodeChunk,callback, true);
+						driver->pushRawCommand(gcodeChunk);
 						count++;
 
 						driver->extraStatusFromGcode(gcodeChunk);
@@ -1065,7 +1062,7 @@ void runDriver(uv_work_t* req, int status){
 void Start(const FunctionCallbackInfo<Value>& args)
 {
 
-	std::cout << "Starting Formide drivers v6.6.7" << std::endl;
+	std::cout << "Starting Formide drivers v6.6.7 (modified)" << std::endl;
 
 	std::cout << "Debug level: " << Logger::GetInstance()->getLogLevel() << std::endl;
 
@@ -1115,7 +1112,7 @@ void Start(const FunctionCallbackInfo<Value>& args)
 
 }
 
-//Pause print function
+//Pause print function. Args: printerID, pauseGCode, callback
 void PausePrint(const FunctionCallbackInfo<Value>& args) {
 
 	Logger::GetInstance()->logMessage("Pause print received",1,0);
@@ -1135,6 +1132,30 @@ void PausePrint(const FunctionCallbackInfo<Value>& args) {
 	String::Utf8Value v8String(args[0]->ToString());
 	std::string printerID = std::string(*v8String);
 
+	// Parse pauseGcode from arguments
+	std::string pauseGCode="";
+
+	// Parse Callback from arguments
+	Local<Function> cb;
+
+	// This is writen this way to keep backwards compatibility
+	if(args[1]->IsFunction())
+	{
+		cb = Local<Function>::Cast(args[1]);
+	}
+	else
+	{
+		String::Utf8Value v8String(args[1]->ToString());
+		pauseGCode = std::string(*v8String);
+
+		cb = Local<Function>::Cast(args[2]);
+	}
+
+
+	if(!pauseGCode.size()>0)
+		pauseGCode="G91\nG1 E-6\nG1 Z10\nG90\n";
+
+
 	MarlinDriver* driver = DeviceCenter::GetInstance()->getDriverFromPrinter(printerID);
 
 	// Pause print
@@ -1142,6 +1163,49 @@ void PausePrint(const FunctionCallbackInfo<Value>& args) {
 
 	if (success)
 	{
+
+		try
+		{
+			// Make multiple commands separating by \n
+			size_t pos0 = 0;
+			size_t posT = (pauseGCode.find("\n",pos0)) +1;
+			std::string gcodeChunk;
+
+			Logger::GetInstance()->logMessage("Appending gcode",4,0);
+
+			// If only one command (which means, no '\n' found)
+			if(pauseGCode.size()>0 && posT == std::string::npos)
+			{
+
+				char* newLine = new char('\n');
+				pauseGCode.append(newLine);
+			}
+
+			while (posT != std::string::npos)
+			{
+				gcodeChunk = pauseGCode.substr(pos0,posT-pos0-1);
+				pos0 = posT;
+				Logger::GetInstance()->logMessage("Appending: ",5,0);
+				Logger::GetInstance()->logMessage(gcodeChunk,5,0);
+
+				std::string callback;
+
+				// Add each single command in raw line buffer
+				driver->pushRawCommand(gcodeChunk);
+
+				posT = (pauseGCode.find("\n",posT));
+				if (posT != std::string::npos)
+				{
+					posT+=1;
+				}
+			}
+		}
+		catch(...)
+		{
+			Logger::GetInstance()->logMessage("Exception while parsing pause gcode",1,0);
+
+		}
+
 		// Return success response
 		resultOBJ->Set(String::NewFromUtf8(isolate, "code"), Integer::New(isolate,200));
 		resultOBJ->Set(String::NewFromUtf8(isolate, "msg"), String::NewFromUtf8(isolate,"Print paused"));
@@ -1157,12 +1221,13 @@ void PausePrint(const FunctionCallbackInfo<Value>& args) {
 		callbackArguments[1] = v8::Null(isolate);
 	}
 
-	Local<Function> cb = Local<Function>::Cast(args[1]);
+
 	cb->Call(isolate->GetCurrentContext()->Global(), numberOfArguments, callbackArguments);
 
 	return;
 }
 
+//Resume print function. Args: printerID, resumeGCode, callback
 void ResumePrint(const FunctionCallbackInfo<Value>& args) {
 
 	// Declare NodeJS variables
@@ -1180,6 +1245,32 @@ void ResumePrint(const FunctionCallbackInfo<Value>& args) {
 	String::Utf8Value v8String(args[0]->ToString());
 	std::string printerID = std::string(*v8String);
 
+	// Parse resumeGcode from arguments
+	std::string resumeGCode="";
+
+	// Parse Callback from arguments
+	Local<Function> cb;
+
+
+	// This is writen this way to keep backwards compatibility
+	if(args[1]->IsFunction())
+	{
+		cb = Local<Function>::Cast(args[1]);
+	}
+	else
+	{
+		// Parse Resume Gcode
+		String::Utf8Value v8String(args[1]->ToString());
+		resumeGCode = std::string(*v8String);
+
+		cb = Local<Function>::Cast(args[2]);
+	}
+
+
+	if(!resumeGCode.size()>0)
+		resumeGCode="G91\nG1 Z-10\nG90\n";
+
+
 	// Resume print
 	Logger::GetInstance()->logMessage("Resume print received",1,0);
 	MarlinDriver* driver = DeviceCenter::GetInstance()->getDriverFromPrinter(printerID);
@@ -1187,6 +1278,48 @@ void ResumePrint(const FunctionCallbackInfo<Value>& args) {
 
 	if (success)
 	{
+
+		try
+		{
+
+			// Make multiple commands separating by \n
+			size_t pos0 = 0;
+			size_t posT = (resumeGCode.find("\n",pos0)) +1;
+			std::string gcodeChunk;
+
+			Logger::GetInstance()->logMessage("Appending gcode",4,0);
+
+			// If only one command (which means, no '\n' found)
+			if(resumeGCode.size()>0 && posT == std::string::npos)
+			{
+				char* newLine = new char('\n');
+				resumeGCode.append(newLine);
+			}
+
+			while (posT != std::string::npos)
+			{
+				gcodeChunk = resumeGCode.substr(pos0,posT-pos0-1);
+				pos0 = posT;
+				Logger::GetInstance()->logMessage("Appending: ",5,0);
+				Logger::GetInstance()->logMessage(gcodeChunk,5,0);
+
+				std::string callback;
+
+				// Add each single command in raw line buffer
+				driver->pushRawCommand(gcodeChunk);
+
+				posT = (resumeGCode.find("\n",posT));
+				if (posT != std::string::npos)
+				{
+					posT+=1;
+				}
+			}
+
+		}
+		catch(...)
+		{
+			Logger::GetInstance()->logMessage("Exception while parsing resume gcode",1,0);
+		}
 		resultOBJ->Set(String::NewFromUtf8(isolate, "code"), Integer::New(isolate,200));
 		resultOBJ->Set(String::NewFromUtf8(isolate, "msg"), String::NewFromUtf8(isolate,"Print resumed"));
 		resultOBJ->Set(String::NewFromUtf8(isolate, "port"), String::NewFromUtf8(isolate,printerID.c_str()));
@@ -1201,7 +1334,6 @@ void ResumePrint(const FunctionCallbackInfo<Value>& args) {
 		callbackArguments[1] = v8::Null(isolate);
 	}
 
-	Local<Function> cb = Local<Function>::Cast(args[1]);
 	cb->Call(isolate->GetCurrentContext()->Global(), numberOfArguments, callbackArguments);
 	return;
 
@@ -1234,8 +1366,8 @@ void StopPrint(const FunctionCallbackInfo<Value>& args) {
 
 	MarlinDriver* driver = DeviceCenter::GetInstance()->getDriverFromPrinter(printerID);
 
-	// TODO: Remove hardcoded stop GCODE
-	stopGcode="G92 E0\nG28 X\nM104 S0\nM104 S0 T0\nM104 S0 T1\n M140 S0\nM84";
+	if (!stopGcode.size()>0)
+		stopGcode="G92 E0\nG28 X\nM104 S0\nM104 S0 T0\nM104 S0 T1\n M140 S0\nM84\n";
 
 
 	//Divide stop GCODE in lines
@@ -1243,7 +1375,6 @@ void StopPrint(const FunctionCallbackInfo<Value>& args) {
 	size_t posT = (stopGcode.find("\n",pos0)) +1;
 	std::string gcodeChunk;
 
-	int count =0;
 	while (posT != std::string::npos)
 	{
 
@@ -1255,8 +1386,7 @@ void StopPrint(const FunctionCallbackInfo<Value>& args) {
 		Logger::GetInstance()->logMessage(gcodeChunk,2,0);
 
 		// Queue each GCODE command in raw line buffer
-		driver->pushRawCommand(gcodeChunk,callback, true);
-		count++;
+		driver->pushRawCommand(gcodeChunk);
 
 		posT = (stopGcode.find("\n",posT));
 

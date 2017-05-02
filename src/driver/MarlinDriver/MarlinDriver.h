@@ -167,7 +167,7 @@ public:
 	Name: Push Raw Command
 	Purpose: Sends a command directly to the printer, or queues it to be sent as a Tune command
 	*/
-	void pushRawCommand(const std::string& gcode, std::string &callback, bool wait);
+	void pushRawCommand(const std::string& gcode);
 
 	/*
 	Name: Extra Status From Gcode

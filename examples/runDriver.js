@@ -3,7 +3,7 @@ var driver = require('../index.js');
 var positive = false;
 var printerID;
 var tuneLine=0;
-var samplecode = "testgcodes/none_feedrate.gcode"
+var samplecode = "testgcodes/moveAround.gcode"
 var sleep = require('sleep');
 
 
@@ -25,20 +25,21 @@ driver.start(function(err,result,event){
 
 			printerID=event.port;
 
-			// setInterval(alertFunc2, 10000);
-			// printerID=event.port;
-			//
-			sleep.sleep(3);
-			// driver.printFile(samplecode, 6, event.port,function(err,result){
-			// 	if(err)
-			// 	{
-			// 		console.log(err);
-			// 	}
-			// 	if(result)
-			// 	{
-			// 		console.log(result);
-			// 	}
-			// });
+
+			sleep.sleep(15);
+			driver.printFile(samplecode, 6, event.port,function(err,result){
+				if(err)
+				{
+					console.log(err);
+				}
+				if(result)
+				{
+					console.log(result);
+				}
+			});
+
+			console.log("Setting interval!!!!!!")
+			setInterval(alertFunc2, 15000);
 		}
 	}
 });
@@ -49,17 +50,34 @@ driver.start(function(err,result,event){
 
  function alertFunc2(){
 
-	 // Arguments: PrinterId, lineCount, skipCount, callback
-	 driver.getCommunicationLogs(printerID, 10, 10, function(err,result){
- 		if(err)
- 		{
-			console.log("Error log",err)
- 		}
- 		if(result)
- 		{
- 			console.log("log data",result)
- 		}
-	});
+	 if(positive)
+		 {
+			 driver.pausePrint(printerID,function(err,result){
+				 if(err)
+				 {
+					 console.log(err);
+				 }
+				 if(result)
+				 {
+					 console.log(result);
+				 }
+			 });
+			 positive=false;
+		 }
+	 else {
+		 driver.resumePrint(printerID,function(err,result){
+			 if(err)
+			 {
+				 console.log(err);
+			 }
+			 if(result)
+			 {
+				 console.log(result);
+			 }
+		 });
+		 positive=true;
+	 }
+
 }
 
 

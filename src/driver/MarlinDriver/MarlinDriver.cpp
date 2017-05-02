@@ -771,7 +771,7 @@ MarlinDriver::checkIfTemperaturesAreReached(){
 
 //TODO: Get rid of callback
 void
-MarlinDriver::pushRawCommand (const std::string& gcode, std::string &callback, bool wait) {
+MarlinDriver::pushRawCommand (const std::string& gcode) {
 
 	rawLineBuffer.push_back(gcode);
 }
@@ -1395,8 +1395,8 @@ MarlinDriver::resumePrint(){
 			{
 				rawLineBuffer.push_back("G90");
 				rawLineBuffer.push_back("G92 E"+std::to_string(resumeEvalue));
-				rawLineBuffer.push_back("G1 F6000 X5 Y5");
-				rawLineBuffer.push_back("M402");
+//				rawLineBuffer.push_back("G1 F6000 X5 Y5");
+//				rawLineBuffer.push_back("M402");
 				mustReturnToResumePosition=false;
 			}
 

@@ -357,7 +357,7 @@ int MarlinDriver::mainIteration() {
 
 					if (checkTemperatureAttempt_ < maxCheckTemperatureAttempts_)
 					{
-						Logger::GetInstance()->logMessage("Sending temperature message to test connection",1,0);
+						Logger::GetInstance()->logMessage("Sending temperature message to test connection",2,0);
 						sendNextMessage();
 						checkTemperatureAttempt_++;
 					}

@@ -11,3 +11,8 @@ lib
 src/.settings/language.settings.xml
 
 src/.cproject
+
+*.xml
+
+*.prefs
+

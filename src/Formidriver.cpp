@@ -1367,7 +1367,7 @@ void StopPrint(const FunctionCallbackInfo<Value>& args) {
 	MarlinDriver* driver = DeviceCenter::GetInstance()->getDriverFromPrinter(printerID);
 
 	if (!stopGcode.size()>0)
-		stopGcode="G92 E0\nG28 X\nM104 S0\nM104 S0 T0\nM104 S0 T1\n M140 S0\nM84";
+		stopGcode="G92 E0\nG28 X\nM104 S0\nM104 S0 T0\nM104 S0 T1\n M140 S0\nM84\n";
 
 
 	//Divide stop GCODE in lines

@@ -1133,7 +1133,7 @@ void PausePrint(const FunctionCallbackInfo<Value>& args) {
 	std::string printerID = std::string(*v8String);
 
 	// Parse pauseGcode from arguments
-	std::string pauseGCode;
+	std::string pauseGCode="";
 
 	// Parse Callback from arguments
 	Local<Function> cb;
@@ -1246,7 +1246,7 @@ void ResumePrint(const FunctionCallbackInfo<Value>& args) {
 	std::string printerID = std::string(*v8String);
 
 	// Parse resumeGcode from arguments
-	std::string resumeGCode;
+	std::string resumeGCode="";
 
 	// Parse Callback from arguments
 	Local<Function> cb;

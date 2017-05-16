@@ -1454,6 +1454,16 @@ void GetCommunicationLogs(const FunctionCallbackInfo<Value>& args)
 	try{
 		lineCount = atoi(lineCountS.c_str());
 		skipCount = atoi(skipCountS.c_str());
+
+		if(lineCount < 1)
+		{
+			lineCount = 100;
+		}
+
+		if(skipCount < 0)
+		{
+			skipCount = 0;
+		}
 	}
 
 	catch(...)

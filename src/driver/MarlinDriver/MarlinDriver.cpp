@@ -1601,7 +1601,7 @@ MarlinDriver::parseResponseFromPrinter(string& code, bool* echo) {
 		waitReceived=0;
 	}
 
-	if(waitReceived > 2 && state == PRINTING)
+	if(waitReceived > 2 && (state == PRINTING || state == HEATING_BLOCKED || state == HEATING) )
 	{
 		Logger::GetInstance()->logMessage("Three wait's received. Printing next line.",1,0);
 		sendNextMessage();

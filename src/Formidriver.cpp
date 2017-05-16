@@ -1062,7 +1062,7 @@ void runDriver(uv_work_t* req, int status){
 void Start(const FunctionCallbackInfo<Value>& args)
 {
 
-	std::cout << "Starting Formide drivers v6.6.8-alpha.1" << std::endl;
+	std::cout << "Starting Formide drivers v6.6.8-alpha.2" << std::endl;
 
 	std::cout << "Debug level: " << Logger::GetInstance()->getLogLevel() << std::endl;
 

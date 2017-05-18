@@ -11,6 +11,9 @@ Formide-Drivers is the software used by Formide to connect with a 3D printer and
 * Check printer status (temperatures, progress, coordinates, current layer, etc).
 * Read communication logs.
 
+# Documentation
+Please find all the documentation in this project's [wiki](https://github.com/PRINTR3D/formide-drivers/wiki).
+
 # Installation
 There are pre-built binaries of this project.
 Installation can be done with `npm`:

@@ -1062,7 +1062,7 @@ void runDriver(uv_work_t* req, int status){
 void Start(const FunctionCallbackInfo<Value>& args)
 {
 
-	std::cout << "Starting Formide drivers v6.6.8" << std::endl;
+	std::cout << "Starting Formide drivers v6.6.9" << std::endl;
 
 	std::cout << "Debug level: " << Logger::GetInstance()->getLogLevel() << std::endl;
 
@@ -1274,52 +1274,57 @@ void ResumePrint(const FunctionCallbackInfo<Value>& args) {
 	// Resume print
 	Logger::GetInstance()->logMessage("Resume print received",1,0);
 	MarlinDriver* driver = DeviceCenter::GetInstance()->getDriverFromPrinter(printerID);
+
+
+	// Append resume gcode
+	try
+	{
+
+		// Make multiple commands separating by \n
+		size_t pos0 = 0;
+		size_t posT = (resumeGCode.find("\n",pos0)) +1;
+		std::string gcodeChunk;
+
+		Logger::GetInstance()->logMessage("Appending gcode",4,0);
+
+		// If only one command (which means, no '\n' found)
+		if(resumeGCode.size()>0 && posT == std::string::npos)
+		{
+			char* newLine = new char('\n');
+			resumeGCode.append(newLine);
+		}
+
+		while (posT != std::string::npos)
+		{
+			gcodeChunk = resumeGCode.substr(pos0,posT-pos0-1);
+			pos0 = posT;
+			Logger::GetInstance()->logMessage("Appending: ",5,0);
+			Logger::GetInstance()->logMessage(gcodeChunk,5,0);
+
+			std::string callback;
+
+			// Add each single command in raw line buffer
+			driver->pushRawCommand(gcodeChunk);
+
+			posT = (resumeGCode.find("\n",posT));
+			if (posT != std::string::npos)
+			{
+				posT+=1;
+			}
+		}
+
+	}
+	catch(...)
+	{
+		Logger::GetInstance()->logMessage("Exception while parsing resume gcode",1,0);
+	}
+
+
+	// Resume print
 	bool success = driver->resumePrint();
 
 	if (success)
 	{
-
-		try
-		{
-
-			// Make multiple commands separating by \n
-			size_t pos0 = 0;
-			size_t posT = (resumeGCode.find("\n",pos0)) +1;
-			std::string gcodeChunk;
-
-			Logger::GetInstance()->logMessage("Appending gcode",4,0);
-
-			// If only one command (which means, no '\n' found)
-			if(resumeGCode.size()>0 && posT == std::string::npos)
-			{
-				char* newLine = new char('\n');
-				resumeGCode.append(newLine);
-			}
-
-			while (posT != std::string::npos)
-			{
-				gcodeChunk = resumeGCode.substr(pos0,posT-pos0-1);
-				pos0 = posT;
-				Logger::GetInstance()->logMessage("Appending: ",5,0);
-				Logger::GetInstance()->logMessage(gcodeChunk,5,0);
-
-				std::string callback;
-
-				// Add each single command in raw line buffer
-				driver->pushRawCommand(gcodeChunk);
-
-				posT = (resumeGCode.find("\n",posT));
-				if (posT != std::string::npos)
-				{
-					posT+=1;
-				}
-			}
-
-		}
-		catch(...)
-		{
-			Logger::GetInstance()->logMessage("Exception while parsing resume gcode",1,0);
-		}
 		resultOBJ->Set(String::NewFromUtf8(isolate, "code"), Integer::New(isolate,200));
 		resultOBJ->Set(String::NewFromUtf8(isolate, "msg"), String::NewFromUtf8(isolate,"Print resumed"));
 		resultOBJ->Set(String::NewFromUtf8(isolate, "port"), String::NewFromUtf8(isolate,printerID.c_str()));

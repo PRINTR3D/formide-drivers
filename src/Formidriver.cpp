@@ -766,8 +766,8 @@ void runDriver(uv_work_t* req, int status){
 	v8::HandleScope scope(isolate);
 	if(!isolate)
 	{
-		isolate = v8::Isolate::New();
-		isolate->Enter();
+		// isolate = v8::Isolate::New();
+		// isolate->Enter();
 	}
 	ListBaton* data = static_cast<ListBaton*>(req->data);
 

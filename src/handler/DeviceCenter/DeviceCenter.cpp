@@ -3,7 +3,7 @@
  *	Copyright (c) 2017, All rights reserved, Printr B.V.
  */
 
-
+#include <nan.h>
 #include <math.h>
 #include <cmath>
 #include <vector>
@@ -97,8 +97,8 @@ void DeviceCenter::printFinished(std::string port)
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
     if (!isolate) {
-        isolate = v8::Isolate::New();
-        isolate->Enter();
+        // isolate = v8::Isolate::New();
+        // isolate->Enter();
     }
 
     // Retrieve printJob
@@ -140,8 +140,8 @@ void DeviceCenter::extruderJam(std::string port)
     v8::HandleScope scope(isolate);
     if (!isolate) {
 
-        isolate = v8::Isolate::New();
-        isolate->Enter();
+        // isolate = v8::Isolate::New();
+        // isolate->Enter();
     }
 
     // Callback argument
@@ -174,8 +174,8 @@ void DeviceCenter::printerErrorEvent(std::string port, std::string key, std::str
     v8::HandleScope scope(isolate);
     if (!isolate) {
 
-        isolate = v8::Isolate::New();
-        isolate->Enter();
+        // isolate = v8::Isolate::New();
+        // isolate->Enter();
     }
 
     // Callback argument
@@ -208,8 +208,8 @@ void DeviceCenter::printerWarningEvent(std::string port, std::string key, std::s
     v8::HandleScope scope(isolate);
     if (!isolate) {
 
-        isolate = v8::Isolate::New();
-        isolate->Enter();
+        // isolate = v8::Isolate::New();
+        // isolate->Enter();
     }
 
     // Callback argument
@@ -241,8 +241,8 @@ void DeviceCenter::printerInfoEvent(std::string port, std::string key, std::stri
     v8::HandleScope scope(isolate);
     if (!isolate) {
 
-        isolate = v8::Isolate::New();
-        isolate->Enter();
+        // isolate = v8::Isolate::New();
+        // isolate->Enter();
     }
 
     // Return argument
@@ -274,8 +274,8 @@ void DeviceCenter::printerInfoEvent(std::string port, std::string key, int messa
     v8::HandleScope scope(isolate);
     if (!isolate) {
 
-        isolate = v8::Isolate::New();
-        isolate->Enter();
+        // isolate = v8::Isolate::New();
+        // isolate->Enter();
     }
 
     // Return argument
@@ -307,8 +307,8 @@ void DeviceCenter::printerOnline(std::string port, int baudrate)
     v8::HandleScope scope(isolate);
     if (!isolate) {
 
-        isolate = v8::Isolate::New();
-        isolate->Enter();
+        // isolate = v8::Isolate::New();
+        // isolate->Enter();
     }
 
     // Callback argument
@@ -338,8 +338,8 @@ void DeviceCenter::printerConnected(std::string port)
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
     v8::HandleScope scope(isolate);
     if (!isolate) {
-        isolate = v8::Isolate::New();
-        isolate->Enter();
+        // isolate = v8::Isolate::New();
+        // isolate->Enter();
     }
 
     // Callback argument
@@ -369,8 +369,8 @@ void DeviceCenter::printerDisconnected(std::string port)
     v8::HandleScope scope(isolate);
     if (!isolate) {
 
-        isolate = v8::Isolate::New();
-        isolate->Enter();
+        // isolate = v8::Isolate::New();
+        // isolate->Enter();
     }
 
     // Callback argument

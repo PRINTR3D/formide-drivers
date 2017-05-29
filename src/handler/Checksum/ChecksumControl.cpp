@@ -39,11 +39,8 @@ ChecksumControl::~ChecksumControl()
 string
 ChecksumControl::getFormattedMessageOnly(int sequenceNumber, string message)
 {
-    int currentPos = currentPosition + 1;
     string formattedMessage = "N" + std::to_string(sequenceNumber) + " " + message;
-
     formattedMessage = addChecksum(formattedMessage);
-
     return formattedMessage;
 }
 
@@ -106,6 +103,10 @@ ChecksumControl::updateChecksum(int sequenceNumber, string message)
         checksumVector[position] = newMessage;
         return newMessage;
     }
+    else
+    {
+        return message;
+    }
 }
 
 // Reset sequence number counter and previously sent buffer
@@ -137,17 +138,18 @@ ChecksumControl::addChecksum(string message)
             command = command.substr(0, posT);
         }
     }
-
     catch (...) {
         std::cout << "substr exception at checksum" << std::endl;
-        ;
     }
 
     const char* cmd = command.c_str();
 
     int cs = 0;
-    for (int i = 0; cmd[i] != '*' && cmd[i] != NULL; i++)
+
+    for (int i = 0; cmd[i] != '*' && cmd[i] != NULL; i++) {
         cs = cs ^ cmd[i];
+    }
+
     cs &= 0xff; // defensive programming
 
     string finalMessage = command + "*" + std::to_string(cs);

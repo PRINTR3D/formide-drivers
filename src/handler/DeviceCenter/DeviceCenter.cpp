@@ -497,24 +497,23 @@ void DeviceCenter::newDriverForPrinter(std::string printerID, bool sendEvent)
 }
 
 // Returns pointer to driver
-MarlinDriver*
-DeviceCenter::getDriverFromPrinter(std::string printerID)
+MarlinDriver* DeviceCenter::getDriverFromPrinter(std::string printerID)
 {
-
     int a = 0;
-    bool success = false;
-    for (std::vector<std::string>::iterator it = printerList.begin(); it != printerList.end(); it++) {
+
+    for (std::vector<std::string>::iterator it = printerList.begin(); it != printerList.end(); it++)
+    {
         if (printerID == printerList[a])
-            if (connectedList[a]) {
-                success = true;
+        {
+            if (connectedList[a])
+            {
                 return PrinterDataList[a].driver;
             }
-            else
-                return NULL;
+        }
         a++;
     }
-    if (!success)
-        return NULL;
+
+    return NULL;
 }
 
 // Returns all printer data
@@ -605,17 +604,15 @@ void DeviceCenter::updateConnected(std::vector<bool> booleans, bool empty)
 void DeviceCenter::updatePrintJobID(std::string printerID, int printjobid)
 {
     int a = 0;
-    int id;
+
     for (std::vector<std::string>::iterator it = printerList.begin(); it != printerList.end(); it++) {
-        if (printerID == printerList[a])
+        if (printerID == printerList[a]) {
             if (connectedList[a]) {
                 PrinterDataList[a].printjobID = printjobid;
-
                 PrinterDataList[a].timeStarted = currentDateTime();
-
                 break;
             }
-
+        }
         a++;
     }
 }

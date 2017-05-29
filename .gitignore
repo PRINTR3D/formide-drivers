@@ -5,14 +5,10 @@ node_modules
 build
 lib
 .project
-
 .DS_Store
-
 src/.settings/language.settings.xml
-
 src/.cproject
-
 *.xml
-
 *.prefs
-
+.vscode
+npm-debug.log

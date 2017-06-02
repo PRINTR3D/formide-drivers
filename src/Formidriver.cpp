@@ -1057,9 +1057,6 @@ void runDriver(uv_work_t* req, int status){
 // This function starts the threads for usb pulling and driver controllers
 void Start(const FunctionCallbackInfo<Value>& args)
 {
-
-	std::cout << "Starting Formide drivers v6.6.9" << std::endl;
-
 	std::cout << "Debug level: " << Logger::GetInstance()->getLogLevel() << std::endl;
 
 	Isolate* isolate = Isolate::GetCurrent();

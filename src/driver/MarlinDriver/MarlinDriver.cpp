@@ -121,12 +121,17 @@ int
 MarlinDriver::openConnection() {
 
 	Logger::GetInstance()->logMessage("Using port "+serialPortPath_,1,0);
+
 	int rv = serial_.open(serialPortPath_.c_str());
+	
 	if (rv < 0) {
 		if(state != CONNECTING) setState(CONNECTING);
 		return rv;
 	}
+
 	setBaudrate(baudrate_);
+
+	return -1;
 }
 
 
@@ -302,10 +307,9 @@ void MarlinDriver::setState(STATE state_) {
 int MarlinDriver::mainIteration() {
 
 	// No logic when printer is not valid
-	if(printerNotValid)
+	if (printerNotValid) {
 		return -1;
-
-	int nothing = 0;
+	}
 
 	// Serial communication logic
 	if (!isConnected())
@@ -461,6 +465,8 @@ int MarlinDriver::mainIteration() {
 			return ITERATION_INTERVAL - timer_.getElapsedTimeInMilliSec();
 		}
 	}
+
+	return -1;
 }
 
 
@@ -1820,13 +1826,11 @@ void MarlinDriver::updatePrinterStatus(std::string readData){
 							int i = 0;
 							bool extrudersAvailable=true;
 							std::size_t posT;
-							std::size_t posNoT;
 							std::vector<int> extrudersTemperatureVector;
 							std::vector<int> extruderTargetVector;
 
 							bool gotIt=false;
 							bool gotIt2 = false;
-							bool simple = false;
 							bool cont = false;
 
 							int secure = 0;
@@ -2525,16 +2529,11 @@ void MarlinDriver::printGcodeLineFromBuffer()
 
 			}
 		}
-
-		catch(...)
-
-		{
-			int nothing = 0;
+		catch (...) {
 			Logger::GetInstance()->logMessage("stoi exception caught",4,0);
 		}
 
-		if(DeviceCenter::GetInstance()->getBufferedLines(serialPortPath_) < 50 )
-		{
+		if (DeviceCenter::GetInstance()->getBufferedLines(serialPortPath_) < 50) {
 			Logger::GetInstance()->logMessage("Warning: printer ending",4,0);
 		}
 

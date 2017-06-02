@@ -29,7 +29,7 @@ using namespace node;
 std::ifstream& GotoLine(std::ifstream& file, unsigned int num)
 {
     file.seekg(std::ios::beg);
-    for (int i = 0; i < num; ++i) {
+    for (unsigned int i = 0; i < num; ++i) {
         file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     return file;
@@ -385,7 +385,6 @@ void* FormiThread::calculatePrintingTime(void* threadarg)
                 if (hasX && !hasY) {
 
                     string newX = getParameter(singleLine, "X", gotIt);
-                    bool flag = false;
 
                     if (gotIt) {
                         oldCoordinateX = coordinateX;
@@ -401,7 +400,6 @@ void* FormiThread::calculatePrintingTime(void* threadarg)
                 if (hasY && !hasX) {
 
                     string newY = getParameter(singleLine, "Y", gotIt);
-                    bool flag = false;
 
                     if (gotIt) {
                         oldCoordinateY = coordinateY;

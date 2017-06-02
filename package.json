@@ -1,6 +1,6 @@
 {
   "name": "formide-drivers",
-  "version": "6.6.9",
+  "version": "6.6.10",
   "description": "Drivers for formide-client",
   "main": "index.js",
   "os" : [ "darwin", "linux" ],
@@ -10,7 +10,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "install": "./node_modules/.bin/node-pre-gyp install --fallback-to-build"
+    "install": "./node_modules/.bin/node-pre-gyp install --fallback-to-build",
+    "build": "node-pre-gyp rebuild"
   },
   "author": "",
   "license": "ISC",

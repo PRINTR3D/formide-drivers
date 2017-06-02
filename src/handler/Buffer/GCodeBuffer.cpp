@@ -49,9 +49,9 @@ void GCodeBuffer::set(const string& gcode)
 void GCodeBuffer::append(const string& gcode)
 {
 
-    uint32_t startTime = getMillis();
+    // uint32_t startTime = getMillis();
     int count = 0;
-    size_t size = gcode.size();
+    // size_t size = gcode.size();
     size_t start = 0;
 
     while (start < gcode.size()) {
@@ -222,14 +222,15 @@ void GCodeBuffer::updateStats(string* buffer, size_t pos)
 
 void GCodeBuffer::cleanupGCode(string* buffer, size_t pos)
 {
-    uint32_t startTime = getMillis(), commentDelta, doubleNLDelta, endTime;
+    // uint32_t startTime = getMillis(),
+    uint32_t commentDelta, doubleNLDelta, endTime;
 
     size_t buflen = buffer->length();
 
     //replace \r with \n
     std::replace(buffer->begin() + pos, buffer->end(), '\r', '\n');
 
-    std::size_t posComment = 0;
+    // std::size_t posComment = 0;
     commentDelta = getMillis();
 
     //replace \n\n with \n

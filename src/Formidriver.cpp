@@ -52,10 +52,7 @@ void GetPrinterList (const FunctionCallbackInfo<Value>& args){
 	Local<Array> arrayOBJ;
 	arrayOBJ.Clear();
 	arrayOBJ = Array::New(isolate);
-	Local<Object> errorOBJ = Object::New(isolate);
-
 	Local<Function> cb = Local<Function>::Cast(args[0]);
-
 
 	// Get printer list
 	std::vector<std::string> result = DeviceCenter::GetInstance()->getPrinterList();
@@ -597,7 +594,6 @@ void PrintFile(const FunctionCallbackInfo<Value>& args) {
 					// Clear GCODE
 					Logger::GetInstance()->logMessage("Clear gcode",1,0);
 					driver->clearGCode();
-					int fileSize;
 
 					// Read file contents
 					Logger::GetInstance()->logMessage("Read file contents",1,0);
@@ -766,8 +762,8 @@ void runDriver(uv_work_t* req, int status){
 	v8::HandleScope scope(isolate);
 	if(!isolate)
 	{
-		isolate = v8::Isolate::New();
-		isolate->Enter();
+		// isolate = v8::Isolate::New();
+		// isolate->Enter();
 	}
 	ListBaton* data = static_cast<ListBaton*>(req->data);
 
@@ -1152,8 +1148,9 @@ void PausePrint(const FunctionCallbackInfo<Value>& args) {
 	}
 
 
-	if(!pauseGCode.size()>0)
+	if(!(pauseGCode.size() > 0)) {
 		pauseGCode="G91\nG1 E-6\nG1 Z10\nG90\n";
+	}
 
 
 	MarlinDriver* driver = DeviceCenter::GetInstance()->getDriverFromPrinter(printerID);
@@ -1267,8 +1264,9 @@ void ResumePrint(const FunctionCallbackInfo<Value>& args) {
 	}
 
 
-	if(!resumeGCode.size()>0)
+	if(!(resumeGCode.size()>0)) {
 		resumeGCode="G91\nG1 Z-10\nG90\n";
+	}
 
 
 	// Resume print
@@ -1371,9 +1369,9 @@ void StopPrint(const FunctionCallbackInfo<Value>& args) {
 
 	MarlinDriver* driver = DeviceCenter::GetInstance()->getDriverFromPrinter(printerID);
 
-	if (!stopGcode.size()>0)
-		stopGcode="G92 E0\nG28 X\nM104 S0\nM104 S0 T0\nM104 S0 T1\n M140 S0\nM84\n";
-
+	if (!(stopGcode.size()>0)) {
+		stopGcode = "G92 E0\nG28 X\nM104 S0\nM104 S0 T0\nM104 S0 T1\n M140 S0\nM84\n";
+	}
 
 	//Divide stop GCODE in lines
 	size_t pos0 = 0;

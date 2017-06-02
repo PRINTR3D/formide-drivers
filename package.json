@@ -1,6 +1,6 @@
 {
   "name": "formide-drivers",
-  "version": "6.6.9",
+  "version": "6.6.10",
   "description": "Drivers for formide-client",
   "main": "index.js",
   "os" : [ "darwin", "linux" ],
